@@ -1,0 +1,778 @@
+---
+title: "Sensitivity Analysis on continuous nodes"
+author: "Camilla Negri"
+date: "2023-10-16"
+output: 
+---
+
+# Aim
+Sensitivity analysis is undertaken in this notebook to understand the effect of using non-catchment specific data in the BBN while avoiding discretization of the hybrid network.
+
+For this notebook, it is advised to use at least the R version:
+R version 4.2.1 (2022-06-23 ucrt) -- "Funny-Looking Kid".
+To make sure of this, check the R version in the Tools menu.
+
+
+# Load useful libraries
+```{r setup, include=FALSE}
+library(rSMILE)
+library(plyr)
+library(dplyr) 
+library(tidyverse)
+library(ggplot2)
+library(viridis)
+library(hrbrthemes)
+```
+
+# Load license
+This code requires a rSMILE license (available for free to academics upon request to BayesFusion)
+```{r}
+rSMILE::License(paste(
+# your rSMILE license goes here
+  )
+)
+```
+
+# Read the BBN
+```{r}
+net <- Network() # creates a network
+net$readFile("Ptool_pointanddiffuse_v7_Dunleer.xdsl")
+# nodes <- net$getAllNodes()
+# node_id<-net$getAllNodeIds() # handles or ids
+# node_count<-net$getNodeCount() # counts
+# nodes
+# node_id
+```
+
+# Simulation zero 
+no modifications for SA
+Get marginal posteriors for the target node with model as is.
+```{r}
+net$updateBeliefs()
+beliefs <- net$getNodeValue("PConcentration")
+beliefs0<-as.data.frame(beliefs)
+# class(beliefs0)
+# head(beliefs0)
+mean_beliefs0<-mean(beliefs0$beliefs)
+median_beliefs0<-median(beliefs0$beliefs)
+std_beliefs0<-sd(beliefs0$beliefs)
+# mean_beliefs0
+# median_beliefs0
+# std_beliefs0
+```
+
+
+####################################################################################################
+
+
+# Sensitivity to changes in WSP (water soluble P)
+# Sample mean evenly
+
+```{r}
+#means <- seq(-0.1, -0.5, -0.1)
+means <- seq(2, -2, -0.1)
+WSP_equations <- sprintf("WSP=Lognormal(%.1f,1)", means) # . decimals, f for floating, substitute the % with the variable mean
+#print(WSP_equations)
+```
+
+```{r}
+output_WSP_mean <- matrix(nrow = 10000, ncol = length(WSP_equations))  # initialize your output data frame
+```
+
+```{r}
+for(i in 1:length(WSP_equations))  {
+    net$setNodeEquation("WSP", WSP_equations[i])
+    net$updateBeliefs()
+    beliefs <- net$getNodeValue("PConcentration")
+    output_WSP_mean[,i] = beliefs
+    net$clearEvidence("WSP")
+    }
+
+#View(output.df_WSP_mean)
+class(output_WSP_mean)
+output_WSP_mean<-as.data.frame(output_WSP_mean)
+colnames(output_WSP_mean)
+```
+
+Change column names 
+```{r}
+colnamesWSP<-sprintf("%.1f", means)
+#print(colnamesDD)
+```
+
+```{r}
+for (i in 1:ncol(output_WSP_mean)){
+  colnames(output_WSP_mean)[i] <- colnamesWSP[i]
+}
+colnames(output_WSP_mean)
+head(output_WSP_mean)
+```
+
+# Make figures for mean
+No need to add the simulation"0" as it is one of those we called (mean =-0.9), change the column names to the mean value, mark the boxplot with the original equation with a different color
+Remember to put the mean in the correct order (factor in the correct order)
+```{r}
+output_WSP_mean_gathered<-output_WSP_mean%>%
+gather(key = "mean", value = "concentration")
+```
+
+```{r}
+output_WSP_mean_gathered$mean<- as.factor(as.numeric(output_WSP_mean_gathered$mean))
+```
+
+```{r}
+sample_n(output_WSP_mean_gathered, 1000) %>%
+  ggplot(aes(x = mean, y = log10(concentration))) +
+  geom_boxplot(fill = "grey92") +
+  ggbeeswarm::geom_quasirandom(
+    ## draw bigger points
+    size = 1.5,
+    ## add some transparency
+    alpha = .4,
+    ## control range of the beeswarm
+    width = .2) +
+  ggtitle("WSP=Lognormal(mean, 0.1)") +
+  xlab("mean") +
+  ylab(expression(paste("log"["10"], " P concentrations mg L"^-1))) +
+  theme(axis.text.x=element_text(angle=45,hjust=1))
+```
+
+```{r}
+sampled<-sample_n(output_WSP_mean_gathered, 3000)
+wsp_mean<- sampled %>% 
+ggplot(aes(x = mean, y = log10(concentration))) +
+  geom_boxplot(fill = "grey92") +
+  ggbeeswarm::geom_quasirandom(
+    ## draw bigger points
+    size = 1.5,
+    ## add some transparency
+    alpha = .4,
+    ## control range of the beeswarm
+    width = .2) +
+    geom_boxplot(data=sampled[sampled$mean=="-0.9",],aes(x = mean, y = log10(concentration)),fill="lightgreen",alpha=0.4) +
+  ggtitle("WSP=Lognormal(mean, 0.1)") +
+  xlab("mean") +
+  ylab(expression(paste("log"["10"], " P concentrations mg L"^-1))) +
+  theme(axis.text.x=element_text(angle=45,hjust=1))
+
+wsp_mean
+```
+
+essentially the impact of this parameter on TRP concentration (within this tested range) is limited, however it could be tested with a different range.
+
+
+# sample standard deviation evenly, keep mean fixed 
+```{r}
+stds <- seq(-2, 2, 0.1) 
+WSP_equations2 <- sprintf("WSP=Lognormal(-0.9,%.1f)", stds) # . decimals, f for floating, substitute the % with the variable mean
+#print(WSP_equations2)
+```
+
+```{r}
+output_WSP_std <- matrix(nrow = 10000, ncol = length(WSP_equations2))  # initialize your output data frame
+```
+
+```{r}
+for(i in 1:length(WSP_equations2))  {
+    net$setNodeEquation("WSP", WSP_equations2[i])
+    net$updateBeliefs()
+    beliefs <- net$getNodeValue("PConcentration")
+    output_WSP_std[,i] = beliefs
+    net$clearEvidence("WSP")
+    }
+
+# View(output_WSP_std)
+class(output_WSP_std)
+output_WSP_std<-as.data.frame(output_WSP_std)
+head(output_WSP_std)
+colnames(output_WSP_std)
+```
+
+```{r}
+colnamesWSPstd<-sprintf("%.1f", stds)
+```
+
+```{r}
+for (i in 1:ncol(output_WSP_std)){
+  colnames(output_WSP_std)[i] <- colnamesWSPstd[i]
+}
+colnames(output_WSP_std)
+head(output_WSP_std)
+```
+
+# Make figures for std
+# Plotting the raw data points according to their distribution, sample a few values out of the 10000
+```{r}
+output_WSP_std_gathered<-output_WSP_std%>%
+gather(key = "std", value = "concentration")
+```
+
+```{r}
+output_WSP_std_gathered$std<- as.factor(as.numeric(output_WSP_std_gathered$std))
+```
+
+
+```{r}
+sampled<-sample_n(output_WSP_std_gathered, 3000)
+wsp_sd<-sampled %>% 
+ggplot(aes(x = std, y = log10(concentration))) +
+  geom_boxplot(fill = "grey92") +
+  ggbeeswarm::geom_quasirandom(
+    ## draw bigger points
+    size = 1.5,
+    ## add some transparency
+    alpha = .4,
+    ## control range of the beeswarm
+    width = .2) +
+    geom_boxplot(data=sampled[sampled$std=="0.1",],aes(x = std, y = log10(concentration)),fill="lightgreen", alpha=0.4) +
+  ggtitle("WSP=Lognormal(-0.9, std)") +
+  xlab("std") +
+  ylab(expression(paste("log"["10"], " P concentrations mg L"^-1)))+
+  theme(axis.text.x=element_text(angle=45,hjust=1))
+
+wsp_sd
+```
+
+The standard deviation also has negligible effect.
+
+####################################################################
+
+# WSP mean + std variation at the same time
+
+```{r}
+means <- seq(2, -2, -0.5)
+stds <- seq(-2, 2, 0.5)
+means<-c(2.0,1.5,1.0,0.5,0.0,-0.5,-0.9,-1.0,-1.5,-2.0) # add the -0.9 mean
+# stds
+combinations <- expand.grid(means = means, stds = stds)
+num_combinations <- nrow(combinations)
+
+print(combinations)
+print(num_combinations)
+```
+
+
+```{r}
+# Create vector of strings with equations
+WSP_equations_combined <- paste("WSP=Lognormal(", combinations$means, ",", combinations$stds, ")", sep = "")
+
+# Print or use WSP_equations_combined as needed
+#print(WSP_equations_combined)
+```
+
+```{r}
+output_WSP_combined <- matrix(nrow = 10000, ncol = length(WSP_equations_combined))  # initialize your output data frame
+```
+
+```{r}
+for(i in 1:length(WSP_equations_combined))  {
+    net$setNodeEquation("WSP", WSP_equations_combined[i])
+    net$updateBeliefs()
+    beliefs <- net$getNodeValue("PConcentration")
+    output_WSP_combined[,i] = beliefs
+    net$clearEvidence("WSP")
+    }
+
+#class(output_WSP_combined)
+output_WSP_combined<-as.data.frame(output_WSP_combined)
+#head(output_WSP_combined)
+#colnames(output_WSP_combined)
+```
+
+```{r}
+for (i in 1:ncol(output_WSP_combined)){
+  colnames(output_WSP_combined)[i] <- WSP_equations_combined[i]
+}
+colnames(output_WSP_combined)
+head(output_WSP_combined)
+```
+
+In the below code, sub is used to extract the "mean" and "std" values from the "equations" column, and as.factor is applied to convert them to factors. The regular expressions used in sub extract the values between the parentheses in the "equations" column.
+
+```{r}
+# Pivot the dataframe and perform necessary column manipulations
+output_WSP_combined1 <- output_WSP_combined %>%
+  pivot_longer(cols = everything(),
+               names_to = "equations", 
+               values_to = "concentration") %>%
+# Extract "mean" and "std" values from "equations" and convert them to factors
+  mutate(mean = as.factor(sub(".*\\((.*),.*", "\\1", equations)),
+         std = as.factor(sub(".*,\\s*(.*)\\)", "\\1", equations))) %>%
+  select(-equations) # Select only relevant columns
+# Print or get the head of the resulting dataframe
+#head(output_WSP_combined1)
+```
+
+Add simulation zero stored in beliefs0$beliefs
+```{r}
+# Create a data frame with the desired conditions
+new_rows <- data.frame(mean = factor(-0.9),  
+                       std = factor(1),
+                       concentration = beliefs0$beliefs)
+head(new_rows)
+# Use bind_rows to concatenate the two data frames
+output_WSP_combined1 <- bind_rows(output_WSP_combined1, new_rows)
+#View(output_WSP_combined1)
+```
+
+Re-order the mean
+```{r}
+output_WSP_combined1$mean <- factor(output_WSP_combined1$mean, levels = rev(c(2.0, 1.5, 1.0, 0.5, 0.0, -0.5, -0.9, -1.0, -1.5, -2.0)))
+```
+
+```{r}
+output_WSP_combined1<-output_WSP_combined1%>%
+group_by(mean, std)%>%
+  filter(concentration>= 0.01 & concentration <= 5)%>%
+dplyr::summarise(medianp=median(log10(concentration),na.rm=T))
+```
+
+# Level plot (WEP)
+```{r}
+# Give extreme colors:
+ggplot(output_WSP_combined1, aes(mean, std, fill= medianp)) + 
+  geom_tile() +
+  scale_fill_gradient(low="white", high="blue") +
+  theme_ipsum()
+
+# Color Brewer palette
+ggplot(output_WSP_combined1, aes(mean, std, fill= medianp)) + 
+  geom_tile() +
+  scale_fill_distiller(palette = "RdPu") +
+  theme_ipsum()
+
+# Color Brewer palette
+ggplot(output_WSP_combined1, aes(mean, std, fill= medianp)) + 
+  geom_tile() +
+  scale_fill_viridis(discrete=FALSE) +
+  theme_ipsum()
+```
+the colors in these plots are misleading, the difference between a median of -1.05 and -1.08 is negligible.
+
+###################################################################################################################################
+
+# Direct Discharge 
+(initial values 0.14 present vs 0.86 absent)
+
+# Set multiple probability options for the chance nodes 
+```{r}
+net$clearAllEvidence()
+```
+
+```{r}
+presence_column <-seq(0, 1, 0.05)
+absence_column<-seq(1, 0, -0.05)
+DD_probs <- data.frame(presence_column,absence_column)
+```
+
+```{r}
+output_DD <- matrix(nrow = 10000, ncol = 21)  # initialize your output data frame
+
+for(i in 1:nrow(DD_probs))  {
+    net$setNodeDefinition("Directdischarge",c(DD_probs$presence_column[i],DD_probs$absence_column[i]))
+   #print(net$getNodeDefinition("Directdischarge"))
+    net$updateBeliefs()
+    beliefs <- net$getNodeValue("PConcentration")
+    output_DD[,i] = beliefs
+   #print(i)
+}
+
+output_DD<-as.data.frame(output_DD)
+head(output_DD)
+```
+
+Change column names 
+```{r}
+colnamesDD<-sprintf("%.2f", presence_column)
+#print(colnamesDD)
+```
+
+```{r}
+for (i in 1:ncol(output_DD)){
+  colnames(output_DD)[i] <- colnamesDD[i]
+}
+colnames(output_DD)
+head(output_DD)
+```
+
+```{r}
+output_DD$`0.14`<-beliefs0$beliefs # add the simulation zero as last column of this df 
+```
+
+Make some figures for Direct Discharge
+```{r}
+output_DD_gathered<-output_DD%>%
+gather(key = "presence", value = "concentration")
+```
+
+```{r}
+sampled<-sample_n(output_DD_gathered, 3000)
+dunleer_DD<-sampled %>% 
+ggplot(aes(x = presence, y = log10(concentration))) +
+  geom_boxplot(fill = "grey92") +
+  ggbeeswarm::geom_quasirandom(
+    ## draw bigger points
+    size = 1.5,
+    ## add some transparency
+    alpha = .4,
+    ## control range of the beeswarm
+    width = .2) +
+    geom_boxplot(data=sampled[sampled$presence=="0.14",], aes(x = presence, y = log10(concentration)), fill="lightgreen",alpha=0.4) +
+  ggtitle("Direct Discharge (DD) - Dunleer") +
+  xlab("probability of DD presence") +
+    ylab(expression(paste("log"["10"], " P concentrations mg L"^-1))) +
+  theme(axis.text.x=element_text(angle=45,hjust=1))
+dunleer_DD
+```
+
+#################################################################################################
+
+# Number of septic tanks per catchment 
+
+The node we're exploring is Total_RealisedSTloadTmonth, the equation is
+Total_RealisedSTloadTmonth=Choose(ST_Connectedness,STLoad_kgmonth*0.05,STLoad_kgmonth*0.3,STLoad_kgmonth*0.8)*88/1000, where we change the initial value 88.
+
+```{r}
+STs <- seq(30, 150, 2) 
+STequations <- sprintf("Total_RealisedSTloadTmonth=Choose(ST_Connectedness,STLoad_kgmonth*0.05,STLoad_kgmonth*0.3,STLoad_kgmonth*0.8)* %.0f /1000", STs) # . decimals, f for floating, substitute the % with the variable mean
+```
+this gets 61 equations.
+
+```{r}
+output_STs<- matrix(nrow = 10000, ncol = length(STequations))  # initialize your output data frame
+```
+
+```{r}
+for(i in 1:length(STequations))  {
+    net$setNodeEquation("Total_RealisedSTloadTmonth", STequations[i])
+    net$updateBeliefs()
+    beliefs <- net$getNodeValue("PConcentration")
+    output_STs[,i] = beliefs
+    net$clearEvidence("Total_RealisedSTloadTmonth")
+    }
+
+# View(output_WSP_std)
+class(output_STs)
+output_STs<-as.data.frame(output_STs)
+head(output_STs)
+```
+
+Change column names 
+```{r}
+colnamesSTs<-sprintf("%.0f", STs)
+```
+
+```{r}
+for (i in 1:ncol(output_STs)){
+  colnames(output_STs)[i] <- colnamesSTs[i]
+}
+colnames(output_STs)
+head(output_STs)
+```
+
+```{r}
+output_STs_gathered<-output_STs%>%
+gather(key = "STs", value = "concentration")
+```
+
+```{r}
+sampledSTs<-sample_n(output_STs_gathered, 5000)
+sampledSTs$STs<- as.factor(as.numeric(sampledSTs$STs))
+```
+
+```{r fig.width=11.5}
+sampledSTs %>% 
+ggplot(aes(x = STs, y = log10(concentration))) +
+  geom_boxplot(fill = "grey92") +
+  ggbeeswarm::geom_quasirandom(
+    ## draw bigger points
+    size = 1.5,
+    ## add some transparency
+    alpha = .4,
+    ## control range of the beeswarm
+    width = .2) +
+    geom_boxplot(data=sampledSTs[sampledSTs$STs=="88",], aes(x = STs, y = log10(concentration)), fill="lightgreen",alpha=0.4) +
+  ggtitle("Number of Septic Tanks (STs) - Dunleer") +
+  xlab("Number of STs") +
+  ylab(expression(paste("log"["10"], " P concentrations mg L"^-1))) +
+  theme(axis.text.x=element_text(angle=45,hjust=1))
+```
+
+#################################################################################################################################
+
+# Predicted Dissolved P
+This is an equation that is not catchment specific, and related WEP in the soil to TRP in the stream, which is why it is important to test whether the model is sensitive to it or not. 
+
+The node equation is written in Genie like so 
+Predicted_dissolved_P=If(0.08*WEP-0.158<0,0,0.08*WEP-0.158), 
+here we have β =0.08, α =0.158, so we will sample β and α evenly and separately.
+
+# Sample β evenly
+
+Getting the beta to vary between what is beyond physically acceptable here (i.e. negative values).
+
+```{r}
+betas_seq <- seq(-1, 1, 0.02)
+#print(betas_seq)
+
+beta_equations <- sprintf("Predicted_dissolved_P=If(%.2f*WEP-0.158<0,0,%.2f*WEP-0.158)", betas_seq, betas_seq) # . decimals, f for floating, substitute the % with the variable mean
+#print(beta_equations)
+```
+
+```{r}
+output_betas <- matrix(nrow = 10000, ncol = length(beta_equations))  # initialize your output data frame
+```
+
+```{r}
+for(i in 1:length(beta_equations))  {
+    net$setNodeEquation("Predicted_dissolved_P", beta_equations[i])
+    net$updateBeliefs()
+    beliefs <- net$getNodeValue("PConcentration")
+    output_betas[,i] = beliefs
+    net$clearEvidence("Predicted_dissolved_P")
+    }
+
+class(output_betas)
+output_betas<-as.data.frame(output_betas)
+colnames(output_betas)
+```
+
+Change column names 
+```{r}
+colnames_dissolved_P<-sprintf("%.2f", betas_seq)
+```
+
+```{r}
+for (i in 1:ncol(output_betas)){
+  colnames(output_betas)[i] <- colnames_dissolved_P[i]
+}
+colnames(output_betas)
+head(output_betas)
+```
+
+```{r}
+output_betas_gathered<-output_betas%>%
+gather(key = "beta", value = "concentration")
+output_betas_gathered$beta<- as.factor(as.numeric(output_betas_gathered$beta))
+```
+
+```{r fig.width=14}
+sampled<-sample_n(output_betas_gathered, 8000)
+
+beta_fig<- sampled %>% 
+ggplot(aes(x = beta, y = log10(concentration))) +
+  geom_boxplot(fill = "grey92") +
+  ggbeeswarm::geom_quasirandom(size = 1.5,alpha = .4, width = .2) +
+    geom_boxplot(data=sampled[sampled$beta=="0.08",],aes(x = beta, y = log10(concentration)),fill="lightgreen",alpha=0.4) +
+  ggtitle("β*WEP-0.158") +
+  xlab("β") +
+  ylab(expression(paste("log"["10"], " P concentrations mg L"^-1))) +
+  theme(axis.text.x=element_text(angle=45,hjust=1))
+
+beta_fig
+```
+
+
+# Sample α evenly
+```{r}
+alpha_seq <- seq(0, 0.2, 0.005)
+#print(alpha_seq)
+alpha_equations <- sprintf("Predicted_dissolved_P=If(0.08*WEP-(%.3f)<0,0,0.08*WEP-(%.3f))", alpha_seq, alpha_seq)
+#print(alpha_equations)
+```
+
+```{r}
+output_alphas <- matrix(nrow = 10000, ncol = length(alpha_equations))  # initialize your output data frame
+```
+
+```{r}
+net$clearEvidence("Predicted_dissolved_P")
+for(i in 1:length(alpha_equations))  {
+    net$setNodeEquation("Predicted_dissolved_P", alpha_equations[i])
+    net$updateBeliefs()
+    beliefs <- net$getNodeValue("PConcentration")
+    output_alphas[,i] = beliefs
+    net$clearEvidence("Predicted_dissolved_P")
+    }
+
+class(output_alphas)
+output_alphas<-as.data.frame(output_alphas)
+#colnames(output_alphas)
+```
+
+Change column names 
+```{r}
+colnames_dissolved_P2<-sprintf("%.3f", alpha_seq)
+```
+
+```{r}
+for (i in 1:ncol(output_alphas)){
+  colnames(output_alphas)[i] <- colnames_dissolved_P2[i]
+}
+colnames(output_alphas)
+head(output_alphas)
+```
+
+```{r}
+output_alphas$`0.158`<-beliefs0$beliefs # add the simulation zero
+```
+
+```{r}
+output_alphas_gathered<-output_alphas%>%
+gather(key = "alpha", value = "concentration")
+output_alphas_gathered$alpha<- as.factor(as.numeric(output_alphas_gathered$alpha))
+```
+
+```{r fig.width=14}
+sampled<-sample_n(output_alphas_gathered, 5000)
+
+alpha_fig<-sampled %>% 
+ggplot(aes(x = alpha, y = log10(concentration))) +
+  geom_boxplot(fill = "grey92") +
+  ggbeeswarm::geom_quasirandom(size = 1.5,alpha = .4, width = .2) +
+    geom_boxplot(data=sampled[sampled$alpha=="0.158",],aes(x = alpha, y = log10(concentration)),fill="lightgreen",alpha=0.4) +
+  ggtitle("0.08*WEP-α") +
+  xlab("α") +
+  ylab(expression(paste("log"["10"], " P concentrations mg L"^-1))) +
+  theme(axis.text.x=element_text(angle=45,hjust=1)) #
+alpha_fig
+```
+
+this plot above also ok, linear response 
+
+######################################################################################################
+
+# Predicted Dissolved P, sample β and α at the same time
+`Predicted_dissolved_P=If(0.08*WEP-0.158<0,0,0.08*WEP-0.158)`
+β =0.08, 
+α =0.158
+This requires to reduce the number of betas and alphas tested to reduce the number of combinations.
+
+```{r}
+betas <- seq(-0.12, 0.12, 0.02)
+print(betas)
+
+alpha <- seq(0, 0.30, 0.05)
+alpha <-c(0.00, 0.05, 0.10, 0.15, 0.158, 0.20, 0.25, 0.30) # add 0.158
+#print(alpha)
+```
+
+Get all combinations
+```{r}
+WEPcombinations <- expand.grid(alpha = alpha, betas = betas)
+num_combinations <- nrow(WEPcombinations)
+print(WEPcombinations)
+print(num_combinations)
+```
+
+```{r}
+# Create vector of strings with equations
+WEP_equations <- paste("Predicted_dissolved_P=If(", WEPcombinations$beta, "*WEP-", WEPcombinations$alpha, "<0,0,", WEPcombinations$beta, "*WEP-", WEPcombinations$alpha, ")", sep = "")
+
+# Print or use WEP_equations as needed
+#print(WEP_equations)
+```
+
+```{r}
+outputWEP <- matrix(nrow = 10000, ncol = length(WEP_equations))  # initialize your output data frame
+```
+
+```{r}
+for(i in 1:length(WEP_equations))  {
+    net$setNodeEquation("Predicted_dissolved_P", WEP_equations[i])
+    net$updateBeliefs()
+    beliefs <- net$getNodeValue("PConcentration")
+    outputWEP[,i] = beliefs
+    net$clearEvidence("Predicted_dissolved_P")
+    }
+
+class(outputWEP)
+outputWEP<-as.data.frame(outputWEP)
+colnames(outputWEP)
+#head(outputWEP)
+```
+
+Change column names 
+```{r}
+for (i in 1:ncol(outputWEP)){
+  colnames(outputWEP)[i] <- WEP_equations[i]
+}
+#colnames(outputWEP)
+#head(outputWEP)
+```
+
+```{r}
+# Pivot the dataframe and perform necessary column manipulations
+outputWEP1 <- outputWEP %>%
+  pivot_longer(cols = everything(),
+               names_to = "equations", 
+               values_to = "concentration")%>%
+mutate(
+    # Extract numeric value between ( and * for BETA (allowing for optional minus sign)
+    beta = as.factor(parse_number(str_extract(equations, "\\((-?[0-9.]+)\\*"))),
+    alpha = as.factor(parse_number(str_extract(equations, "([0-9.]+)<0,")))) %>%
+  select(-equations)  # Remove the original equations column
+
+# Print or get the head of the resulting dataframe
+print(outputWEP1)
+```
+
+Check the levels are all there
+```{r}
+# Number of levels for alpha and beta
+num_levels_alpha <- length(levels(outputWEP1$alpha))
+num_levels_beta <- length(levels(outputWEP1$beta))
+
+# Print the number of levels
+cat("Number of levels for alpha:", num_levels_alpha, "\n")
+cat("Number of levels for beta:", num_levels_beta, "\n")
+```
+
+# Optional: Add simulation zero stored in beliefs0$beliefs
+if the simulation 0 is not already in the tested combinations, in this case, recall β =0.08, α =0.158
+```{r}
+# Create a data frame with the desired conditions
+#new_rows <- data.frame(alpha = factor(0.158),  
+#                       beta = factor(0.08),
+#                       concentration = beliefs0$beliefs)
+#head(new_rows)
+# Use bind_rows to concatenate the two data frames
+#outputWEP1 <- bind_rows(outputWEP1, new_rows)
+#View(outputWEP1)
+```
+
+Re-order alpha
+```{r}
+outputWEP1$alpha <- factor(outputWEP1$alpha, levels = c(0.00, 0.05, 0.10, 0.15, 0.158, 0.20, 0.25, 0.30))
+```
+
+
+```{r}
+WEP_out_TRP_median<-outputWEP1%>%
+  group_by(alpha,beta)%>%
+  filter(concentration>= 0.01 & concentration <= 5)%>%
+summarise(median_trp=median(log10(concentration),na.rm=T))
+
+WEP_out_TRP_median
+```
+
+# Level plot (WEP)
+```{r}
+# Give extreme colors:
+ggplot(WEP_out_TRP_median, aes(alpha, beta, fill= median_trp)) + 
+  geom_tile() +
+  scale_fill_gradient(low="white", high="blue") +
+  theme_ipsum()
+
+# Color Brewer palette
+ggplot(WEP_out_TRP_median, aes(alpha, beta, fill= median_trp)) + 
+  geom_tile() +
+  scale_fill_distiller(palette = "RdPu") +
+  theme_ipsum()
+
+# Color Brewer palette
+ggplot(WEP_out_TRP_median, aes(alpha, beta, fill= median_trp)) + 
+  geom_tile() +
+  scale_fill_viridis(discrete=FALSE) +
+  theme_ipsum()
+```
