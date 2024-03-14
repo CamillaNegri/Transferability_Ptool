@@ -133,7 +133,7 @@ sample_n(output_WSP_mean_gathered, 1000) %>%
     width = .2) +
   ggtitle("WSP=Lognormal(mean, 0.1)") +
   xlab("mean") +
-  ylab(expression(paste("log"["10"], " P concentrations mg L"^-1))) +
+  ylab(expression(paste("log"["10"], " TRP concentrations mg L"^-1))) +
   theme(axis.text.x=element_text(angle=45,hjust=1))
 ```
 
@@ -152,7 +152,7 @@ ggplot(aes(x = mean, y = log10(concentration))) +
     geom_boxplot(data=sampled[sampled$mean=="-0.9",],aes(x = mean, y = log10(concentration)),fill="lightgreen",alpha=0.4) +
   ggtitle("WSP=Lognormal(mean, 0.1)") +
   xlab("mean") +
-  ylab(expression(paste("log"["10"], " P concentrations mg L"^-1))) +
+  ylab(expression(paste("log"["10"], " TRP concentrations mg L"^-1))) +
   theme(axis.text.x=element_text(angle=45,hjust=1))
 
 wsp_mean
@@ -227,7 +227,7 @@ ggplot(aes(x = std, y = log10(concentration))) +
     geom_boxplot(data=sampled[sampled$std=="0.1",],aes(x = std, y = log10(concentration)),fill="lightgreen", alpha=0.4) +
   ggtitle("WSP=Lognormal(-0.9, std)") +
   xlab("std") +
-  ylab(expression(paste("log"["10"], " P concentrations mg L"^-1)))+
+  ylab(expression(paste("log"["10"], " TRP concentrations mg L"^-1)))+
   theme(axis.text.x=element_text(angle=45,hjust=1))
 
 wsp_sd
@@ -420,7 +420,7 @@ ggplot(aes(x = presence, y = log10(concentration))) +
     geom_boxplot(data=sampled[sampled$presence=="0.14",], aes(x = presence, y = log10(concentration)), fill="lightgreen",alpha=0.4) +
   ggtitle("Direct Discharge (DD) - Dunleer") +
   xlab("probability of DD presence") +
-    ylab(expression(paste("log"["10"], " P concentrations mg L"^-1))) +
+    ylab(expression(paste("log"["10"], " TRP concentrations mg L"^-1))) +
   theme(axis.text.x=element_text(angle=45,hjust=1))
 dunleer_DD
 ```
@@ -494,7 +494,7 @@ ggplot(aes(x = STs, y = log10(concentration))) +
     geom_boxplot(data=sampledSTs[sampledSTs$STs=="88",], aes(x = STs, y = log10(concentration)), fill="lightgreen",alpha=0.4) +
   ggtitle("Number of Septic Tanks (STs) - Dunleer") +
   xlab("Number of STs") +
-  ylab(expression(paste("log"["10"], " P concentrations mg L"^-1))) +
+  ylab(expression(paste("log"["10"], " TRP concentrations mg L"^-1))) +
   theme(axis.text.x=element_text(angle=45,hjust=1))
 ```
 
@@ -566,7 +566,7 @@ ggplot(aes(x = beta, y = log10(concentration))) +
     geom_boxplot(data=sampled[sampled$beta=="0.08",],aes(x = beta, y = log10(concentration)),fill="lightgreen",alpha=0.4) +
   ggtitle("β*WEP-0.158") +
   xlab("β") +
-  ylab(expression(paste("log"["10"], " P concentrations mg L"^-1))) +
+  ylab(expression(paste("log"["10"], " TRP concentrations mg L"^-1))) +
   theme(axis.text.x=element_text(angle=45,hjust=1))
 
 beta_fig
@@ -633,7 +633,7 @@ ggplot(aes(x = alpha, y = log10(concentration))) +
     geom_boxplot(data=sampled[sampled$alpha=="0.158",],aes(x = alpha, y = log10(concentration)),fill="lightgreen",alpha=0.4) +
   ggtitle("0.08*WEP-α") +
   xlab("α") +
-  ylab(expression(paste("log"["10"], " P concentrations mg L"^-1))) +
+  ylab(expression(paste("log"["10"], " TRP concentrations mg L"^-1))) +
   theme(axis.text.x=element_text(angle=45,hjust=1)) #
 alpha_fig
 ```
@@ -757,22 +757,27 @@ WEP_out_TRP_median
 ```
 
 # Level plot (WEP)
-```{r}
-# Give extreme colors:
-ggplot(WEP_out_TRP_median, aes(alpha, beta, fill= median_trp)) + 
-  geom_tile() +
-  scale_fill_gradient(low="white", high="blue") +
-  theme_ipsum()
+```{r warning=F}
+# # Give extreme colors:
+# ggplot(WEP_out_TRP_median, aes(alpha, beta, fill= median_trp)) +
+#   geom_tile() +
+#   scale_fill_gradient(low="white", high="blue", name= expression(paste("median TRP concentrations mg l"^-1))) +
+#   theme_ipsum()
+# 
+# # Color Brewer palette
+# ggplot(WEP_out_TRP_median, aes(alpha, beta, fill= median_trp)) +
+#   geom_tile() +
+#   scale_fill_distiller(palette = "RdPu", name= expression(paste("median TRP concentrations mg l"^-1))) +
+#   theme_ipsum()
 
 # Color Brewer palette
-ggplot(WEP_out_TRP_median, aes(alpha, beta, fill= median_trp)) + 
+ggplot(WEP_out_TRP_median, aes(alpha, beta, fill= median_trp)) +
   geom_tile() +
-  scale_fill_distiller(palette = "RdPu") +
+  scale_fill_viridis(discrete=FALSE, name= expression(paste("median TRP concentrations mg l"^-1))) +
   theme_ipsum()
 
-# Color Brewer palette
-ggplot(WEP_out_TRP_median, aes(alpha, beta, fill= median_trp)) + 
+ggplot(WEP_out_TRP_median, aes(alpha, beta, fill= log10(median_trp))) +
   geom_tile() +
-  scale_fill_viridis(discrete=FALSE) +
+  scale_fill_viridis(discrete=FALSE, name= expression(paste("median TRP concentrations mg l"^-1))) +
   theme_ipsum()
 ```
