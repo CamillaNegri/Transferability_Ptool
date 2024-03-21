@@ -5,9 +5,13 @@ date: "2023-10-16"
 output: 
 ---
 
-# Aim
-Sensitivity analysis is undertaken in this notebook to understand the effect of using non-catchment specific data in the BBN while avoiding discretization of the hybrid network.
+# Aims
+Sensitivity analysis (SA) is undertaken in this notebook to understand the effect of using non-catchment specific data in the BBN while avoiding discretization of the hybrid network. Specifically, the SA is carried out here for one a single BBN for a single catchment but the code can be applied to any BBN structure, as long as the node handles are known. 
 
+# Objectives
+The analysis is performed using rSMILE (https://www.bayesfusion.com/), an API engine available in R which can interact with GeNIe Modeler (https://www.bayesfusion.com/), the software used to design the BBNs. The parameter and nodes variations are applied, and the posterior beliefs for the target node “In-stream P concentration [mg l-1]” are updated. The effects of changing the input parameters on the full distributions is assessed visually by comparison against the distribution from “simulation 0” (the initial BBN parameterization). 
+
+# Note
 For this notebook, it is advised to use at least the R version:
 R version 4.2.1 (2022-06-23 ucrt) -- "Funny-Looking Kid".
 To make sure of this, check the R version in the Tools menu.
@@ -20,8 +24,8 @@ library(plyr)
 library(dplyr) 
 library(tidyverse)
 library(ggplot2)
-library(viridis)
-library(hrbrthemes)
+library(viridis) #for plots
+library(hrbrthemes) # for plots
 ```
 
 # Load license
@@ -36,7 +40,7 @@ rSMILE::License(paste(
 # Read the BBN
 ```{r}
 net <- Network() # creates a network
-net$readFile("Ptool_pointanddiffuse_v7_Dunleer.xdsl")
+net$readFile("Ptool_pointanddiffuse_v7_Dunleer.xdsl") # your BBN
 # nodes <- net$getAllNodes()
 # node_id<-net$getAllNodeIds() # handles or ids
 # node_count<-net$getNodeCount() # counts
@@ -67,7 +71,7 @@ std_beliefs0<-sd(beliefs0$beliefs)
 
 # Sensitivity to changes in WSP (water soluble P)
 # Sample mean evenly
-
+(get parameter values and write them in the equation)
 ```{r}
 #means <- seq(-0.1, -0.5, -0.1)
 means <- seq(2, -2, -0.1)
@@ -94,7 +98,7 @@ output_WSP_mean<-as.data.frame(output_WSP_mean)
 colnames(output_WSP_mean)
 ```
 
-Change column names 
+Change column names (useful for plotting)
 ```{r}
 colnamesWSP<-sprintf("%.1f", means)
 #print(colnamesDD)
@@ -161,7 +165,8 @@ wsp_mean
 essentially the impact of this parameter on TRP concentration (within this tested range) is limited, however it could be tested with a different range.
 
 
-# sample standard deviation evenly, keep mean fixed 
+# Sample standard deviation evenly, keep mean fixed
+(get parameter values and write them in the equation)
 ```{r}
 stds <- seq(-2, 2, 0.1) 
 WSP_equations2 <- sprintf("WSP=Lognormal(-0.9,%.1f)", stds) # . decimals, f for floating, substitute the % with the variable mean
@@ -381,7 +386,7 @@ output_DD<-as.data.frame(output_DD)
 head(output_DD)
 ```
 
-Change column names 
+Change column names (useful for plotting)
 ```{r}
 colnamesDD<-sprintf("%.2f", presence_column)
 #print(colnamesDD)
@@ -457,7 +462,7 @@ output_STs<-as.data.frame(output_STs)
 head(output_STs)
 ```
 
-Change column names 
+Change column names (useful for plotting)
 ```{r}
 colnamesSTs<-sprintf("%.0f", STs)
 ```
@@ -508,7 +513,7 @@ Predicted_dissolved_P=If(0.08*WEP-0.158<0,0,0.08*WEP-0.158),
 here we have β =0.08, α =0.158, so we will sample β and α evenly and separately.
 
 # Sample β evenly
-
+(get parameter values and write them in the equation)
 Getting the beta to vary between what is beyond physically acceptable here (i.e. negative values).
 
 ```{r}
@@ -537,7 +542,7 @@ output_betas<-as.data.frame(output_betas)
 colnames(output_betas)
 ```
 
-Change column names 
+Change column names (useful for plotting)
 ```{r}
 colnames_dissolved_P<-sprintf("%.2f", betas_seq)
 ```
@@ -574,6 +579,7 @@ beta_fig
 
 
 # Sample α evenly
+(get parameter values and write them in the equation)
 ```{r}
 alpha_seq <- seq(0, 0.2, 0.005)
 #print(alpha_seq)
@@ -642,7 +648,7 @@ this plot above also ok, linear response
 
 ######################################################################################################
 
-# Predicted Dissolved P, sample β and α at the same time
+# Sample β and α at the same time
 `Predicted_dissolved_P=If(0.08*WEP-0.158<0,0,0.08*WEP-0.158)`
 β =0.08, 
 α =0.158
@@ -657,14 +663,14 @@ alpha <-c(0.00, 0.05, 0.10, 0.15, 0.158, 0.20, 0.25, 0.30) # add 0.158
 #print(alpha)
 ```
 
-Get all combinations
+Get all combinations to write the equations
 ```{r}
 WEPcombinations <- expand.grid(alpha = alpha, betas = betas)
 num_combinations <- nrow(WEPcombinations)
 print(WEPcombinations)
 print(num_combinations)
 ```
-
+Write equations
 ```{r}
 # Create vector of strings with equations
 WEP_equations <- paste("Predicted_dissolved_P=If(", WEPcombinations$beta, "*WEP-", WEPcombinations$alpha, "<0,0,", WEPcombinations$beta, "*WEP-", WEPcombinations$alpha, ")", sep = "")
@@ -729,7 +735,7 @@ cat("Number of levels for beta:", num_levels_beta, "\n")
 ```
 
 # Optional: Add simulation zero stored in beliefs0$beliefs
-if the simulation 0 is not already in the tested combinations, in this case, recall β =0.08, α =0.158
+if the simulation 0 is not already in the tested combinations, in this case, recall β =0.08, α =0.158. It's not necessary now because the original parameters are already embedded in `outputWEP1$alpha` and  `outputWEP1$beta`. 
 ```{r}
 # Create a data frame with the desired conditions
 #new_rows <- data.frame(alpha = factor(0.158),  
@@ -757,6 +763,8 @@ WEP_out_TRP_median
 ```
 
 # Level plot (WEP)
+This is to plot the combined effects of varying two parameters (in this case β and α) on the median concentration of the target node. Examples with various palettes are given and commented out, the code displays the example with the `viridis` palette and both median and median log10 concentrations are plotted here. 
+
 ```{r warning=F}
 # # Give extreme colors:
 # ggplot(WEP_out_TRP_median, aes(alpha, beta, fill= median_trp)) +
@@ -773,11 +781,12 @@ WEP_out_TRP_median
 # Color Brewer palette
 ggplot(WEP_out_TRP_median, aes(alpha, beta, fill= median_trp)) +
   geom_tile() +
-  scale_fill_viridis(discrete=FALSE, name= expression(paste("median TRP concentrations mg l"^-1))) +
-  theme_ipsum()
+  scale_fill_viridis(discrete=FALSE, name= expression(paste("median TRP concentrations mg l"^-1))) 
+# +  theme_ipsum()
 
 ggplot(WEP_out_TRP_median, aes(alpha, beta, fill= log10(median_trp))) +
   geom_tile() +
-  scale_fill_viridis(discrete=FALSE, name= expression(paste("median TRP concentrations mg l"^-1))) +
-  theme_ipsum()
+  scale_fill_viridis(discrete=FALSE, name= expression(paste("median log"["10"], "concentrations mg l"^-1))) +
+  xlab("α")+ 
+ylab("β")
 ```
