@@ -7,7 +7,7 @@ This repository contains supplementary code and data for the paper titled "Trans
 
 - Supplementary Information including the model parameterization and Supplementary Results are in the document [SupplementaryInformation.doc](https://github.com/CamillaNegri/Transferability_Ptool/blob/main/SupplementaryInformation.doc)
 
-- Supplementary code is in the [SensitivityAnalysis.Rmd](https://github.com/CamillaNegri/Transferability_Ptool/blob/main/SensitivityAnalysis.Rmd) - a file detailing the code used for the sensitivity analysis on the continuous node "In stream P concentration mg L-1 month-1". The example is run using the [Ptool_pointanddiffuse_v7_Dunleer.xdsl]]https://github.com/CamillaNegri/Transferability_Ptool/blob/main/Ptool_pointanddiffuse_v7_Dunleer.xdsl), but can be run with any Genie model (https://www.bayesfusion.com/) with appropriate adaptations. 
+- Supplementary code is in the [SensitivityAnalysis.Rmd](https://github.com/CamillaNegri/Transferability_Ptool/blob/main/SensitivityAnalysis.Rmd) - a file detailing the code used for the sensitivity analysis on the continuous node "In stream P concentration mg L-1 month-1". The example is run using the [Ptool_pointanddiffuse_v7_Dunleer.xdsl](https://github.com/CamillaNegri/Transferability_Ptool/blob/main/Ptool_pointanddiffuse_v7_Dunleer.xdsl), but can be run with any Genie model (https://www.bayesfusion.com/) with appropriate adaptations. 
 
 
 ## Acknowledgments
