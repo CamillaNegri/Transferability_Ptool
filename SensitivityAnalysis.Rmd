@@ -752,12 +752,12 @@ Re-order alpha
 outputWEP1$alpha <- factor(outputWEP1$alpha, levels = c(0.00, 0.05, 0.10, 0.15, 0.158, 0.20, 0.25, 0.30))
 ```
 
-
 ```{r}
 WEP_out_TRP_median<-outputWEP1%>%
   group_by(alpha,beta)%>%
   filter(concentration>= 0.01 & concentration <= 5)%>%
-summarise(median_trp=median(log10(concentration),na.rm=T))
+summarise(median_trp_log=median(log10(concentration),na.rm=T),
+          median_trp=median(concentration,na.rm=T))
 
 WEP_out_TRP_median
 ```
@@ -765,6 +765,23 @@ WEP_out_TRP_median
 # Level plot (WEP)
 This is to plot the combined effects of varying two parameters (in this case β and α) on the median concentration of the target node. Examples with various palettes are given and commented out, the code displays the example with the `viridis` palette and both median and median log10 concentrations are plotted here. 
 
+```{r}
+# Color Brewer palette
+ggplot(WEP_out_TRP_median, aes(alpha, beta, fill= median_trp)) +
+  geom_tile() +
+  scale_fill_viridis(discrete=FALSE, name= expression(paste("median TRP concentrations mg l"^-1))) +
+  theme_ipsum()
+
+median_log_TRP_SA<-ggplot(WEP_out_TRP_median, aes(alpha, beta, fill= median_trp_log)) +
+  geom_tile() +
+  scale_fill_viridis(discrete=FALSE, name= expression(paste("median log"["10"], "concentrations mg l"^-1))) +
+  xlab("α")+ 
+ylab("β")
+
+median_log_TRP_SA
+```
+
+Optional plots:
 ```{r warning=F}
 # # Give extreme colors:
 # ggplot(WEP_out_TRP_median, aes(alpha, beta, fill= median_trp)) +
@@ -777,16 +794,9 @@ This is to plot the combined effects of varying two parameters (in this case β 
 #   geom_tile() +
 #   scale_fill_distiller(palette = "RdPu", name= expression(paste("median TRP concentrations mg l"^-1))) +
 #   theme_ipsum()
+```
 
-# Color Brewer palette
-ggplot(WEP_out_TRP_median, aes(alpha, beta, fill= median_trp)) +
-  geom_tile() +
-  scale_fill_viridis(discrete=FALSE, name= expression(paste("median TRP concentrations mg l"^-1))) 
-# +  theme_ipsum()
 
-ggplot(WEP_out_TRP_median, aes(alpha, beta, fill= log10(median_trp))) +
-  geom_tile() +
-  scale_fill_viridis(discrete=FALSE, name= expression(paste("median log"["10"], "concentrations mg l"^-1))) +
-  xlab("α")+ 
-ylab("β")
+```{r}
+ggsave("median_log_TRP_SA.png", median_log_TRP_SA, dpi=420, width = 7, height = 5, units = "in")
 ```
