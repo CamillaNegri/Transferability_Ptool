@@ -25,3 +25,6 @@ Negri, C. and Schurch, N. and Wade, A.J. and Mellander, P-E. and Stutter, M. and
 https://doi.org/10.5194/egusphere-egu23-2747
 https://doi.org/10.5194/egusphere-egu24-6414
 
+## Other published materials
+Negri, Camilla; Mellander, Per-Erik (2024). Evidence dossier for the workshop titled “In-stream phosphorus cycling in agricultural catchments: a workshop to quantify abiotic and biotic P uptake”.. figshare. Online resource. https://doi.org/10.6084/m9.figshare.25055165.v1
+
