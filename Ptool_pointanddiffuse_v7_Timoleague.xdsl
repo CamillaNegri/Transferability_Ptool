@@ -21,29 +21,29 @@
 			<state id="Arable" />
 			<state id="Grassland" />
 			<state id="Seminatural" />
-			<probabilities>0.49 0.42 0.09000000000000002</probabilities>
+			<probabilities>0.04 0.89 0.06999999999999995</probabilities>
 		</cpt>
 		<equation id="Mean_monthly_runoff">
 			<parents>month</parents>
-			<definition lower="0" upper="720000">Mean_monthly_runoff=Choose(month,Lognormal(13.4,0.1),Lognormal(13.3,0.1),Lognormal(12.6,0.1),Lognormal(12.5,0.2),Lognormal(11.9,0.2),Lognormal(11.5,0.3),Lognormal(11.3,0.3),Lognormal(11.3,0.4),Lognormal(11.7,0.4),Lognormal(12.3,0.3),Lognormal(13.3,0.2),Lognormal(13.2,0.2))</definition>
+			<definition lower="0" upper="990000">Mean_monthly_runoff=Choose(month,Lognormal(13.8,0.1),Lognormal(13.3,0.1),Lognormal(12.8,0.1),Lognormal(12.6,0.12),Lognormal(12.2,0.1),Lognormal(12,0.2),Lognormal(12.2,0.3),Lognormal(12.1,0.4),Lognormal(12.1,0.4),Lognormal(12.4,0.2),Lognormal(13.4,0.1),Lognormal(13.6,0.2))</definition>
 			<discretization>
-				<interval label="Very_low" upper="139000" />
-				<interval label="Low" upper="274000" />
-				<interval label="Medium" upper="596800" />
-				<interval label="High" upper="697000" />
-				<interval label="Very_high" upper="720000" />
+				<interval label="Very_low" upper="202577" />
+				<interval label="Low" upper="277340" />
+				<interval label="Medium" upper="603944" />
+				<interval label="High" upper="934347" />
+				<interval label="Very_high" upper="990000" />
 			</discretization>
 		</equation>
 		<equation id="monthlyNTU">
 			<parents>month</parents>
-			<definition lower="0" upper="3810">monthlyNTU=Choose(month,Lognormal(5.94,0.23),Lognormal(5.95,0.26),Lognormal(5.26,0.18),Lognormal(5.36,0.16),Lognormal(5.11,0.14),Lognormal(5.15,0.14),Lognormal(5.09,0.12),Lognormal(5.3,0.15),Lognormal(5.13,0.14),Lognormal(5.4,0.23),Lognormal(6.05,0.3),Lognormal(5.9,0.28))</definition>
+			<definition lower="0" upper="2680">monthlyNTU=Choose(month,Lognormal(5.42,0.17),Lognormal(5.23,0.14),Lognormal(5.07,0.15),Lognormal(4.92,0.13),Lognormal(4.75,0.17),Lognormal(4.58,0.14),Lognormal(4.32,0.14),Lognormal(4.29,0.18),Lognormal(3.8,0.16),Lognormal(4.31,0.22),Lognormal(4.71,0.2),Lognormal(5.48,0.3))</definition>
 			<discretization>
-				<interval label="VVery_Low" upper="1312" />
-				<interval label="Very_Low" upper="1417" />
-				<interval label="Low" upper="1792" />
-				<interval label="Medium" upper="3004" />
-				<interval label="High" upper="3775" />
-				<interval label="Very_High" upper="3810" />
+				<interval label="VVery_Low" upper="500" />
+				<interval label="Very_Low" upper="664" />
+				<interval label="Low" upper="946" />
+				<interval label="Medium" upper="1115" />
+				<interval label="High" upper="2060" />
+				<interval label="Very_High" upper="2680" />
 			</discretization>
 		</equation>
 		<cpt id="Morgan_P">
@@ -52,7 +52,7 @@
 			<state id="Morgan3" />
 			<state id="Morgan4" />
 			<parents>Landuse_type</parents>
-			<probabilities>0.224 0.426 0.142 0.208 0.224 0.249 0.154 0.373 0 0.6 0.3 0.1</probabilities>
+			<probabilities>0.163 0.442 0.289 0.106 0.163 0.225 0.42 0.192 0 0.6 0.3 0.1</probabilities>
 		</cpt>
 		<cpt id="Buffers">
 			<state id="Two_metre" />
@@ -63,18 +63,18 @@
 		</cpt>
 		<equation id="baseflow_plus_elevated_baseflow">
 			<parents>Mean_monthly_runoff</parents>
-			<definition lower="0" upper="538900">baseflow_plus_elevated_baseflow=Mean_monthly_runoff*0.75</definition>
+			<definition lower="0" upper="869748">baseflow_plus_elevated_baseflow=Mean_monthly_runoff*0.88</definition>
 			<discretization>
-				<interval label="Very_low" upper="103887" />
-				<interval label="Low" upper="205000" />
-				<interval label="Medium" upper="447565" />
-				<interval label="High" upper="522370" />
-				<interval label="Very_high" upper="538900" />
+				<interval label="Very_low" upper="178268" />
+				<interval label="Low" upper="244060" />
+				<interval label="Medium" upper="531471" />
+				<interval label="High" upper="822225" />
+				<interval label="Very_high" upper="869748" />
 			</discretization>
 		</equation>
 		<equation id="WEP">
 			<parents>Morgan_P Landuse_type</parents>
-			<definition lower="0" upper="15">WEP=Choose(Morgan_P,Choose(Landuse_type,0.17*Uniform(0,3)+1.23,0.45*Uniform(0,3)+1.78,0.001),Choose(Landuse_type,0.17*Uniform(3.1,6)+1.23,0.45*Uniform(3.1,5)+1.78,0.001),Choose(Landuse_type,0.17*Uniform(6.1,10)+1.23,0.45*Uniform(5.1,8)+1.78,0.001),Choose(Landuse_type,0.17*Uniform(10.1,30)+1.23,0.45*Uniform(8.1,30)+1.78,0.001))</definition>
+			<definition lower="0" upper="15">WEP=Choose(Morgan_P,Choose(Landuse_type,0.36*Uniform(0,3)+0.89,0.57*Uniform(0,3)+0.29,0.001),Choose(Landuse_type,0.36*Uniform(3.1,6)+0.89,0.57*Uniform(3.1,5)+0.29,0.001),Choose(Landuse_type,0.36*Uniform(6.1,10)+0.89,0.57*Uniform(5.1,8)+0.29,0.001),Choose(Landuse_type,0.36*Uniform(10.1,30)+0.89,0.57*Uniform(8.1,30)+0.29,0.001))</definition>
 			<discretization>
 				<interval label="Low" upper="3" />
 				<interval label="Medium" upper="5" />
@@ -85,13 +85,13 @@
 		</equation>
 		<equation id="Surface_runoff">
 			<parents>Mean_monthly_runoff</parents>
-			<definition lower="0" upper="150900">Surface_runoff=Mean_monthly_runoff*0.21</definition>
+			<definition lower="0" upper="79070">Surface_runoff=Mean_monthly_runoff*0.08</definition>
 			<discretization>
-				<interval label="Very_low" upper="23100" />
-				<interval label="Low" upper="57400" />
-				<interval label="Medium" upper="125400" />
-				<interval label="High" upper="147000" />
-				<interval label="Very_high" upper="150900" />
+				<interval label="Very_low" upper="16207" />
+				<interval label="Low" upper="22188" />
+				<interval label="Medium" upper="48316" />
+				<interval label="High" upper="74748" />
+				<interval label="Very_high" upper="79070" />
 			</discretization>
 		</equation>
 		<equation id="WSP">
@@ -107,13 +107,13 @@
 		</equation>
 		<equation id="Subsurface_stormflow">
 			<parents>Mean_monthly_runoff</parents>
-			<definition lower="0" upper="28800">Subsurface_stormflow=Mean_monthly_runoff*0.04</definition>
+			<definition lower="0" upper="39540">Subsurface_stormflow=Mean_monthly_runoff*0.04</definition>
 			<discretization>
-				<interval label="Very_low" upper="5541" />
-				<interval label="Low" upper="10934" />
-				<interval label="Medium" upper="23870" />
-				<interval label="High" upper="27860" />
-				<interval label="Very_high" upper="28800" />
+				<interval label="Very_low" upper="8104" />
+				<interval label="Low" upper="11094" />
+				<interval label="Medium" upper="24158" />
+				<interval label="High" upper="37374" />
+				<interval label="Very_high" upper="39540" />
 			</discretization>
 		</equation>
 		<equation id="Predicted_dissolved_P">
@@ -158,14 +158,14 @@
 		</equation>
 		<equation id="sed_conc">
 			<parents>monthlyNTU</parents>
-			<definition lower="0" upper="531">sed_conc=If(monthlyNTU&lt;432.2,monthlyNTU*1.132,monthlyNTU*0.6032+228.547)</definition>
+			<definition lower="0" upper="380">sed_conc=0.6636*monthlyNTU^1.1045</definition>
 			<discretization>
-				<interval label="VVery_Low" upper="186" />
-				<interval label="Very_Low" upper="201" />
-				<interval label="Low" upper="249" />
-				<interval label="Medium" upper="421" />
-				<interval label="High" upper="527" />
-				<interval label="Very_High" upper="531" />
+				<interval label="VVery_Low" upper="52" />
+				<interval label="Very_Low" upper="73" />
+				<interval label="Low" upper="104" />
+				<interval label="Medium" upper="124" />
+				<interval label="High" upper="268" />
+				<interval label="Very_High" upper="380" />
 			</discretization>
 			<property id="notes">in WISKI for  Suspended Sediment  for ballycanew the equation is  (ts1.value ^ 1.1109) * 0.567  where t1=turbidity.  The unit for Suspended Sediment   = mg/l</property>
 			<property id="monthly_mean_WISKI">269.15</property>
@@ -209,18 +209,18 @@
 			<property id="Note">SRP concentration in FY drains from Harrison et al, 2019. TP could be higher according to other papers. Why I did not use Moloney or Ezzati: dilution problem of other experiments set ups. </property>
 		</equation>
 		<equation id="FYsizeArea">
-			<definition lower="0" upper="5500">FYsizeArea=Lognormal(5.9,0.83)</definition>
+			<definition lower="0" upper="3100">FYsizeArea=Lognormal(5.13,1.01)</definition>
 			<discretization>
-				<interval label="very_low" upper="99" />
-				<interval label="low" upper="204" />
-				<interval label="medium" upper="378" />
-				<interval label="high" upper="665" />
-				<interval label="very_high" upper="5500" />
+				<interval label="very_low" upper="38" />
+				<interval label="low" upper="98" />
+				<interval label="medium" upper="160" />
+				<interval label="high" upper="317" />
+				<interval label="very_high" upper="3100" />
 			</discretization>
 		</equation>
 		<equation id="Incidental_losses_perFY">
 			<parents>PconcentrationFY FYsizeArea Surface_runoff</parents>
-			<definition lower="0" upper="60">Incidental_losses_perFY=Surface_runoff/(948*10000)*FYsizeArea*PconcentrationFY/10^3</definition>
+			<definition lower="0" upper="60">Incidental_losses_perFY=Surface_runoff/(758*10000)*FYsizeArea*PconcentrationFY/10^3</definition>
 			<discretization>
 				<interval label="absent" upper="1e-09" />
 				<interval label="low" upper="0.001" />
@@ -231,7 +231,7 @@
 		</equation>
 		<equation id="Total_Incidental_losses_Tmonth">
 			<parents>Incidental_losses_perFY</parents>
-			<definition lower="0" upper="10">Total_Incidental_losses_Tmonth=Incidental_losses_perFY*70/1000</definition>
+			<definition lower="0" upper="10">Total_Incidental_losses_Tmonth=Incidental_losses_perFY*97/1000</definition>
 			<discretization>
 				<interval label="absent" upper="1e-05" />
 				<interval label="low" upper="0.007" />
@@ -240,34 +240,32 @@
 				<interval label="very_high" upper="10" />
 			</discretization>
 		</equation>
-		<cpt id="Dunleer_ST_risk_classes">
+		<cpt id="Timoleague_ST_risk_classes">
 			<state id="low" />
 			<state id="medium" />
 			<state id="high" />
 			<state id="very_high" />
-			<probabilities>0.639 0.236 0 0.125</probabilities>
+			<probabilities>0.766 0.118 0 0.116</probabilities>
 		</cpt>
 		<cpt id="BallycanewPSaturation100">
 			<state id="Very_Low_0_20" />
 			<state id="Low_20_40" />
 			<state id="Medium_40_60" />
-			<state id="High_60_80" />
-			<state id="Very_High_80_100" />
-			<probabilities>0.85 0.117 0.0145 0.01 0.008500000000000016</probabilities>
+			<probabilities>0.674 0.324 0.001999999999999946</probabilities>
 		</cpt>
 		<cpt id="leachfield_removal">
 			<state id="low" />
 			<state id="medium" />
 			<state id="high" />
-			<parents>Dunleer_ST_risk_classes BallycanewPSaturation100</parents>
-			<probabilities>0 0 1 0 0.1 0.9 0 0.5 0.5 0.1 0.4 0.5 0.1 0.6 0.3 0 0.4 0.6 0.1 0.3 0.6 0.1 0.8 0.1 0.5 0.5 0 0.6 0.4 0 0.3 0.7 0 0.4 0.6 0 0.5 0.5 0 0.7 0.3 0 0.9 0.1 0 0.4 0.6 0 0.5 0.5 0 0.6 0.4 0 0.9 0.1 0 1 0 0</probabilities>
+			<parents>Timoleague_ST_risk_classes BallycanewPSaturation100</parents>
+			<probabilities>0 0.3 0.7 0 0.7 0.3 0.3 0.7 0 0 0.5 0.5 0 1 0 0.5 0.5 0 0 0.7 0.3 0.3 0.7 0 0.7 0.3 0 0 0.5 0.5 0.5 0.5 0 1 0 0</probabilities>
 		</cpt>
 		<cpt id="Connectivity_rescaled_HSA">
 			<state id="none_0" />
 			<state id="low_1_3" />
 			<state id="medium_4_7" />
 			<state id="high_8_10" />
-			<probabilities>0.06 0.73 0.2 0.009999999999999953</probabilities>
+			<probabilities>0.09 0.78 0.12 0.01000000000000001</probabilities>
 		</cpt>
 		<cpt id="Directdischarge">
 			<state id="present" />
@@ -321,9 +319,22 @@
 				<interval label="very_high" upper="12" />
 			</discretization>
 		</equation>
+		<equation id="gw_TDP">
+			<parents>month</parents>
+			<definition lower="0" upper="15">gw_TDP=Choose(month,Lognormal(-3,0.16),Lognormal(-2.7,0.12),Lognormal(-2.6,0.12),Lognormal(-2.9,0.1),Lognormal(-2.45,0.1),Lognormal(-2.67,0.06),Lognormal(-2.69,0.06),Lognormal(-2.22,0.21),Lognormal(-2.62,0.07),Lognormal(-2.74,0.17),Lognormal(-2.7,0.2),Lognormal(-3,0.2))</definition>
+			<discretization>
+				<interval label="VVery_Low" upper="0.1" />
+				<interval label="Very_Low" upper="0.5" />
+				<interval label="Low" upper="1.5" />
+				<interval label="Medium" upper="5" />
+				<interval label="High" upper="8" />
+				<interval label="Very_High" upper="15" />
+			</discretization>
+			<property id="literature">Thomas, I.A., Mellander, P.-E., Murphy, P.N.C., Fenton, O., Shine, O., Djodjic, F., Dunlop, P., Jordan, P., 2016. A sub-field scale critical source area index for legacy phosphorus management using high resolution data. Agriculture, Ecosystems &amp; Environment 233, 238252. https://doi.org/10.1016/j.agee.2016.09.012\n</property>
+		</equation>
 		<equation id="Baseflow_Dissolved_load">
-			<parents>baseflow_plus_elevated_baseflow Predicted_dissolved_P</parents>
-			<definition lower="0" upper="200">Baseflow_Dissolved_load=baseflow_plus_elevated_baseflow*Predicted_dissolved_P/1000</definition>
+			<parents>baseflow_plus_elevated_baseflow gw_TDP</parents>
+			<definition lower="0" upper="200">Baseflow_Dissolved_load=baseflow_plus_elevated_baseflow*gw_TDP/1000</definition>
 			<discretization>
 				<interval label="Low" upper="3" />
 				<interval label="High" upper="200" />
@@ -348,7 +359,7 @@
 		</deterministic>
 		<equation id="winter_removal">
 			<parents>season</parents>
-			<definition>winter_removal=Choose(season,Normal(0.1,0.05),0,0,0)</definition>
+			<definition>winter_removal=Choose(season,Normal(0.12,0.1),0,0,0)</definition>
 			<discretization>
 				<interval label="Very_Low" upper="-0.5" />
 				<interval label="Low" upper="0" />
@@ -396,15 +407,7 @@
 		</equation>
 		<equation id="PConcentration">
 			<parents>reduced_load Mean_monthly_runoff</parents>
-			<definition lower="0" upper="10">PConcentration=reduced_load/(Mean_monthly_runoff*1000)</definition>
-			<discretization>
-				<interval label="Moderate" upper="0.035" />
-				<interval label="Bad" upper="10" />
-			</discretization>
-		</equation>
-		<equation id="Copy_of_PConcentration">
-			<parents>PConcentration</parents>
-			<definition lower="0.01" upper="5">Copy_of_PConcentration=If(PConcentration&lt;=0.01,0.01,PConcentration)</definition>
+			<definition lower="0.01" upper="5">PConcentration=reduced_load/(Mean_monthly_runoff*1000)</definition>
 			<discretization>
 				<interval label="Moderate" upper="0.035" />
 				<interval label="Bad" upper="5" />
@@ -413,7 +416,7 @@
 		<cpt id="Discrete_TRPConcentration">
 			<state id="Good" />
 			<state id="Bad" />
-			<parents>Copy_of_PConcentration</parents>
+			<parents>PConcentration</parents>
 			<probabilities>1 0 0 1</probabilities>
 		</cpt>
 	</nodes>
@@ -477,7 +480,7 @@
 				<barchart active="true" width="242" height="369" />
 			</node>
 			<node id="Surface_runoff">
-				<name>Mean total monthly surface flow m3</name>
+				<name>Mean total monthly surface flowm3</name>
 				<interior color="33cccd" />
 				<outline color="000080" />
 				<font color="000000" name="Arial" size="12" bold="true" />
@@ -513,7 +516,7 @@
 				<interior color="99ccff" />
 				<outline color="000080" />
 				<font color="000000" name="Arial" size="12" bold="true" />
-				<position>1515 1934 1667 2018</position>
+				<position>1121 1888 1273 1972</position>
 				<barchart active="true" width="342" height="138" />
 			</node>
 			<node id="monthlyNTU">
@@ -529,7 +532,7 @@
 				<interior color="ffcc00" />
 				<outline color="000080" />
 				<font color="000000" name="Arial" size="14" bold="true" />
-				<position>878 941 1145 1112</position>
+				<position>908 881 1175 1052</position>
 				<barchart active="true" width="378" height="162" />
 			</node>
 			<node id="PconcentrationFY">
@@ -553,7 +556,7 @@
 				<interior color="00ffff" />
 				<outline color="000080" />
 				<font color="000000" name="Arial" size="12" bold="true" />
-				<position>2020 374 2179 458</position>
+				<position>2031 391 2190 475</position>
 				<barchart active="true" width="260" height="195" />
 			</node>
 			<node id="Total_Incidental_losses_Tmonth">
@@ -604,7 +607,7 @@
 				<position>3198 380 3379 447</position>
 				<barchart active="true" width="288" height="140" />
 			</node>
-			<node id="Dunleer_ST_risk_classes">
+			<node id="Timoleague_ST_risk_classes">
 				<name>soil risk factor</name>
 				<interior color="ffcc00" />
 				<outline color="000080" />
@@ -633,7 +636,7 @@
 				<interior color="cc99ff" />
 				<outline color="000080" />
 				<font color="000000" name="Arial" size="12" bold="true" />
-				<position>2390 992 2504 1046</position>
+				<position>2349 1000 2463 1054</position>
 				<barchart active="true" width="384" height="185" />
 			</node>
 			<node id="Connectivity_rescaled_HSA">
@@ -641,7 +644,7 @@
 				<interior color="ffcc00" />
 				<outline color="000080" />
 				<font color="000000" name="Arial" size="12" bold="true" />
-				<position>3693 359 3788 431</position>
+				<position>3692 358 3787 430</position>
 				<barchart active="true" width="286" height="115" />
 			</node>
 			<node id="sed_conc">
@@ -673,7 +676,7 @@
 				<interior color="ffcc00" />
 				<outline color="000080" />
 				<font color="000000" name="Arial" size="12" bold="true" />
-				<position>677 1300 1000 1448</position>
+				<position>672 1253 995 1401</position>
 				<barchart active="true" width="343" height="138" />
 			</node>
 			<node id="Subsurface_stormflow">
@@ -705,7 +708,7 @@
 				<interior color="ffcc00" />
 				<outline color="000080" />
 				<font color="000000" name="Arial" size="12" bold="true" />
-				<position>326 838 458 919</position>
+				<position>178 826 310 907</position>
 				<barchart active="true" width="362" height="161" />
 			</node>
 			<node id="winter_removal">
@@ -713,7 +716,7 @@
 				<interior color="ff99cc" />
 				<outline color="000080" />
 				<font color="000000" name="Arial" size="12" bold="true" />
-				<position>325 1448 564 1554</position>
+				<position>402 1497 641 1603</position>
 				<barchart active="true" width="335" height="144" />
 			</node>
 			<node id="spring_removal">
@@ -721,7 +724,7 @@
 				<interior color="ff99cc" />
 				<outline color="000080" />
 				<font color="000000" name="Arial" size="12" bold="true" />
-				<position>326 1605 565 1711</position>
+				<position>394 1661 633 1767</position>
 				<barchart active="true" width="335" height="144" />
 			</node>
 			<node id="summer_removal">
@@ -729,7 +732,7 @@
 				<interior color="ff99cc" />
 				<outline color="000080" />
 				<font color="000000" name="Arial" size="12" bold="true" />
-				<position>328 1765 567 1871</position>
+				<position>393 1822 632 1928</position>
 				<barchart active="true" width="335" height="144" />
 			</node>
 			<node id="autumn_removal">
@@ -737,7 +740,7 @@
 				<interior color="ff99cc" />
 				<outline color="000080" />
 				<font color="000000" name="Arial" size="12" bold="true" />
-				<position>331 1928 570 2034</position>
+				<position>393 1986 632 2092</position>
 				<barchart active="true" width="335" height="144" />
 			</node>
 			<node id="season">
@@ -745,14 +748,14 @@
 				<interior color="e5f6f7" />
 				<outline color="000080" />
 				<font color="000000" name="Arial" size="12" bold="true" />
-				<position>11 1637 255 1774</position>
+				<position>15 1632 259 1769</position>
 			</node>
 			<node id="reduced_load">
 				<name>In-stream reduced load T month-1</name>
 				<interior color="99ccff" />
 				<outline color="000080" />
 				<font color="000000" name="Arial" size="12" bold="true" />
-				<position>1125 1576 1277 1660</position>
+				<position>1106 1478 1258 1562</position>
 				<barchart active="true" width="342" height="138" />
 			</node>
 			<node id="PConcentration">
@@ -760,16 +763,16 @@
 				<interior color="99ccff" />
 				<outline color="000080" />
 				<font color="000000" name="Arial" size="12" bold="true" />
-				<position>1115 1758 1267 1842</position>
+				<position>1124 1722 1276 1806</position>
 				<barchart active="true" width="342" height="138" />
 			</node>
-			<node id="Copy_of_PConcentration">
-				<name>Copy of In stream P concentration mg L-1 month-1</name>
-				<interior color="99ccff" />
+			<node id="gw_TDP">
+				<name>Groundwater Dissolved P Concentration mg L-1</name>
+				<interior color="ffcc00" />
 				<outline color="000080" />
 				<font color="000000" name="Arial" size="12" bold="true" />
-				<position>1515 1753 1667 1837</position>
-				<barchart active="true" width="342" height="138" />
+				<position>580 835 712 916</position>
+				<barchart active="true" width="362" height="161" />
 			</node>
 		</genie>
 	</extensions>

@@ -167,8 +167,9 @@ essentially the impact of this parameter on TRP concentration (within this teste
 
 # Sample standard deviation evenly, keep mean fixed
 (get parameter values and write them in the equation)
+the st dev of the Lognormal is always ơ>0 
 ```{r}
-stds <- seq(-2, 2, 0.1) 
+stds <- seq(0, 2, 0.1) 
 WSP_equations2 <- sprintf("WSP=Lognormal(-0.9,%.1f)", stds) # . decimals, f for floating, substitute the % with the variable mean
 #print(WSP_equations2)
 ```
@@ -246,9 +247,10 @@ The standard deviation also has negligible effect.
 
 ```{r}
 means <- seq(2, -2, -0.5)
-stds <- seq(-2, 2, 0.5)
-means<-c(2.0,1.5,1.0,0.5,0.0,-0.5,-0.9,-1.0,-1.5,-2.0) # add the -0.9 mean
-# stds
+stds <- seq(0, 2, 0.5)
+means<-c(2.0,1.5,1.0,0.5,0.0,-0.5,-0.9,-1.0,-1.5,-2.0) # add the -0.9 mean or any value that was the default
+
+# stds # if you need to print
 combinations <- expand.grid(means = means, stds = stds)
 num_combinations <- nrow(combinations)
 
@@ -332,7 +334,7 @@ group_by(mean, std)%>%
 dplyr::summarise(medianp=median(log10(concentration),na.rm=T))
 ```
 
-# Level plot (WEP)
+# Level plot (WSP)
 ```{r}
 # Give extreme colors:
 ggplot(output_WSP_combined1, aes(mean, std, fill= medianp)) + 
