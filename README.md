@@ -18,6 +18,9 @@ This repository contains supplementary code and data for the paper titled "Trans
 ![The James Hutton Institute logo](https://github.com/CamillaNegri/Transferability_Ptool/blob/main/Acknowledgments/JHI_logo.jpg)
 ![Biomathemathics and Statistics Scotland (BioSS) logo](https://github.com/CamillaNegri/Transferability_Ptool/blob/main/Acknowledgments/BioSS_logo.png)
 
+## Open Access peer-reviewed article
+Negri, C., Schurch, N., Wade, A.J., Mellander, P.-E., Stutter, M., Bowes, M.J., Mzyece, C.C., Glendell, M., 2024. Transferability of a Bayesian Belief Network across diverse agricultural catchments using high-frequency hydrochemistry and land management data. Science of The Total Environment 949, 174926. https://doi.org/10.1016/j.scitotenv.2024.174926
+
 ## Preprint
 Negri, C. and Schurch, N. and Wade, A.J. and Mellander, P-E. and Stutter, M. and Bowes, M. and Mzyece, C. C. and Glendell, M., Transferability of a Bayesian Belief Network Across Diverse Agricultural Catchments Using High-Frequency Hydrochemistry and Land Management Data. Available at SSRN: https://ssrn.com/abstract=4780915 or http://dx.doi.org/10.2139/ssrn.4780915
 
@@ -26,5 +29,5 @@ https://doi.org/10.5194/egusphere-egu23-2747
 https://doi.org/10.5194/egusphere-egu24-6414
 
 ## Other published materials
-Negri, Camilla; Mellander, Per-Erik (2024). Evidence dossier for the workshop titled ìIn-stream phosphorus cycling in agricultural catchments: a workshop to quantify abiotic and biotic P uptakeî.. figshare. Online resource. https://doi.org/10.6084/m9.figshare.25055165.v1
+Negri, Camilla; Mellander, Per-Erik (2024). Evidence dossier for the workshop titled ‚ÄúIn-stream phosphorus cycling in agricultural catchments: a workshop to quantify abiotic and biotic P uptake‚Äù.. figshare. Online resource. https://doi.org/10.6084/m9.figshare.25055165.v1
 
